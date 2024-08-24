@@ -9,7 +9,7 @@ end_loop = False
 script_run = datetime.now()
 
 while not end_loop:
-    URL = f"https://www.mangaupdates.com/series.html?page={curr_page}&orderby=rating&perpage=5"
+    URL = f"https://www.mangaupdates.com/series.html?page={curr_page}&orderby=rating&perpage=100"
 
     response = requests.get(URL)
 
