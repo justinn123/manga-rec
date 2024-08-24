@@ -13,7 +13,7 @@ if response.status_code == 200:
     count = 0
 
     for manga in mangas:
-        if count == 10:
+        if count == 50:
             break
         manga_link = manga.find(class_="col-auto align-self-center series_thumb p-0")
         manga_link = manga_link.find('a')
@@ -35,10 +35,13 @@ if response.status_code == 200:
 
                 #Get categories of manga
                 category_list = next_soup.find(class_="tags")
-                category_list = category_list.find_all('li')
-                print(f"Categories:")
-                for item in category_list:
-                    print(f"\t{item.get_text()}")
+                if category_list:
+                    category_list = category_list.find_all('li')
+                    print(f"Categories:")
+                    for item in category_list:
+                        print(f"\t{item.get_text()}")
+                else:
+                    continue
 
                 #Get genre of manga
                 genre = next_soup.find(class_ = "col-6 p-2 text")
