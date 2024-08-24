@@ -22,9 +22,10 @@ while True:
 
         for manga in mangas:
             
+            #Get rating of manga
             divs = manga.find_all(class_="text")
             rating = divs[3].find('b').get_text()
-            if not rating or float(rating) < 8.8:
+            if float(rating) < 7:
                 exit()
             
             
@@ -76,7 +77,10 @@ while True:
                         print("Could not get genres of this manga")
 
                     #Get rating of manga
-                    print(f"Rating: {rating}")
+                    if rating:
+                        print(f"Rating: {rating}")
+                    else:
+                        print("Could not get rating of this manga")
                 else:
                     print(f"Failed to retrieve the page. Status code: {new_response.status_code}")
             else:
