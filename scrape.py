@@ -1,10 +1,14 @@
 from bs4 import BeautifulSoup
+from datetime import datetime
 import requests
 
 rating = 10.0
 curr_page = 1
+end_loop = False
 
-while True:
+script_run = datetime.now()
+
+while not end_loop:
     URL = f"https://www.mangaupdates.com/series.html?page={curr_page}&orderby=rating&perpage=5"
 
     response = requests.get(URL)
@@ -16,7 +20,7 @@ while True:
         mangas = soup.find_all(class_="col-12 col-lg-6 p-3 text")
         if not mangas:
             print("There was an issue retrieving data for mangas")
-            exit(0)
+            break
 
         count = 0
 
@@ -25,8 +29,9 @@ while True:
             #Get rating of manga
             divs = manga.find_all(class_="text")
             rating = divs[3].find('b').get_text()
-            if float(rating) < 7:
-                exit()
+            if float(rating) < 8.8:
+                end_loop = True
+                break
             
             
             manga_link = manga.find(class_="col-auto align-self-center series_thumb p-0")
@@ -89,6 +94,24 @@ while True:
     else:
         print(f"Failed to retrieve website. Status code: {response.status_code}")
     curr_page += 1
+
+script_end = datetime.now()
+time_elapsed = script_end - script_run
+
+hours, remainder = divmod(time_elapsed.seconds, 3600)
+minutes, seconds = divmod(remainder, 60)
+
+elapsed_time_str = []
+if hours > 0:
+    elapsed_time_str.append(f"{hours} hrs")
+if minutes > 0:
+    elapsed_time_str.append(f"{minutes} mins")
+if seconds > 0:
+    elapsed_time_str.append(f"{seconds} secs")
+
+formatted_time_elapsed = ' '.join(elapsed_time_str)
+
+print(f"Time elapsed scraping: {formatted_time_elapsed}")
 
 
 
