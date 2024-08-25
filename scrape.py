@@ -1,6 +1,10 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
 import requests
+import re
+import csv
+
+fields = ['Title', 'Genres', 'Categories', 'Rating']
 
 rating = 10.0
 curr_page = 1
@@ -33,7 +37,6 @@ while not end_loop:
                 end_loop = True
                 break
             
-            
             manga_link = manga.find(class_="col-auto align-self-center series_thumb p-0")
             manga_link = manga_link.find('a')
 
@@ -59,9 +62,15 @@ while not end_loop:
                     category_list = next_soup.find(class_="tags")
                     print(f"Categories:")
                     if category_list:
+                        total_score_votes = 0
                         category_list = category_list.find_all('li')
                         for item in category_list:
-                            print(f"\t{item.get_text()}")
+                            score_str = item.find(attrs={"title": True}).get('title')
+                            score = score_str.split()[1]
+                            total_score_votes+=int(score)
+                            
+                            print(f"\t{item.get_text()}, Score: {score}")
+                        print(f"\tTotal Score: {total_score_votes}")
                     else:
                         print("There was an error getting categories of this manga")
 
