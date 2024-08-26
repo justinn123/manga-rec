@@ -7,4 +7,4 @@ The API of the manga website was not very useful as it did not provide the requi
 Because of this, I had to manually scrape the data myself using BeautifulSoup.
 
 ## Issues
-Currently, after about 100 mangas, I am getting status code 503 meaning that I am overloading the server. This means that I will need to space out the requests of each manga making the scraping time much longer. Fortunately, the scraping should only be done occasionally as most mangas on the list do not update that often, since a lot of them have already ended.
+Currently, after about 100 mangas, I am getting status code 503 meaning that I am overloading the server. This means that I will need to space out the requests of each manga making the scraping time much longer. Fortunately, the scraping should only be done occasionally as most mangas on the list do not update that often, since a lot of them have already ended. (RESOLVED)

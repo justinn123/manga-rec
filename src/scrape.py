@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
-from utils import calc_time_elapsed
+from utils import *
 import os
 import requests
 import csv, json
@@ -15,7 +15,7 @@ script_run = datetime.now()
 fields = ['Title', 'Genres', 'Categories', 'Rating']
 data = []
 
-URL = f"https://www.mangaupdates.com/series.html?page=3&perpage=100&orderby=rating"
+URL = f"https://www.mangaupdates.com/series.html?page=1&perpage=100&orderby=rating"
 
 while not end_loop:
     response = requests.get(URL)
@@ -30,11 +30,10 @@ while not end_loop:
             break
 
         for manga in mangas:
-            
             #Get rating of manga
             divs = manga.find_all(class_="text")
             rating = divs[3].find('b').get_text()
-            if float(rating) < 7:
+            if float(rating) < 8.6:
                 end_loop = True
                 break
             
@@ -47,7 +46,9 @@ while not end_loop:
                 if not next_url.startswith('http'):
                     next_url = requests.compat.urljoin(URL, next_url)
 
-                new_response = requests.get(next_url)
+                new_response = fetch_page(next_url)
+                if not new_response:
+                    continue
 
                 if new_response.status_code == 200:
                     next_soup = BeautifulSoup(new_response.text, 'html.parser')
@@ -98,12 +99,9 @@ while not end_loop:
                         "Categories": categories,
                         "Rating": rating
                     })
-                else:
-                    print(f"Failed to retrieve the manga page. Status code: {new_response.status_code}")
             else:
                 print("Could not get manga details.")
             URL = soup.find('a', text='Next Page').get('href')
-            print(URL)
     else:
         print(f"Failed to retrieve website. Status code: {response.status_code}")
     
@@ -130,11 +128,3 @@ with open(relative_path, mode='w', newline='') as file:
 script_end = datetime.now()
 
 print(f"Time elapsed scraping: {calc_time_elapsed(script_run, script_end)}")
-
-
-
-
-
-
-
-
