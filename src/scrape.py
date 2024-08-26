@@ -5,7 +5,7 @@ import os
 import requests
 import csv, json
 
-fields = ['Title', 'Genres', 'Categories', 'Rating']
+fields = ['Title', 'Genres', 'Categories', 'Total Category Score', 'Rating']
 data = []
 
 rating = 10.0
@@ -32,7 +32,7 @@ while not end_loop:
             #Get rating of manga
             divs = manga.find_all(class_="text")
             rating = divs[3].find('b').get_text()
-            if float(rating) < 8.6:
+            if float(rating) < 8.8:
                 end_loop = True
                 break
             
@@ -62,8 +62,8 @@ while not end_loop:
                     #Get categories of manga
                     category_list = next_soup.find(class_="tags")
                     categories = []
+                    total_score_votes = 0
                     if category_list:
-                        total_score_votes = 0
                         category_list = category_list.find_all('li')
                         for item in category_list:
                             score_str = item.find(attrs={"title": True}).get('title')
@@ -96,6 +96,7 @@ while not end_loop:
                         "Title": title,
                         "Genres": genre_list,
                         "Categories": categories,
+                        "Total Category Score": total_score_votes,
                         "Rating": rating
                     })
             else:
@@ -120,9 +121,10 @@ with open(relative_path, mode='w', newline='') as file:
         title = manga["Title"]
         genres = json.dumps(manga["Genres"])
         categories = json.dumps(manga["Categories"])
+        total_category_score = manga["Total Category Score"]
         rating = manga["Rating"]
         
-        writer.writerow([title, genres, categories, rating])
+        writer.writerow([title, genres, categories, total_category_score, rating])
 
 script_end = datetime.now()
 
