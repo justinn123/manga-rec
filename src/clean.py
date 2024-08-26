@@ -1,19 +1,23 @@
 import pandas as pd
 import json
+import os
+from pathlib import Path
 
-df = pd.read_csv('manga_data.csv')
+
+df = pd.read_csv('../data/manga_data.csv', encoding='latin-1')
 
 def safe_json_loads(json_str):
     try:
-        return json.loads(json_str.replace("'", '"'))
+        return json.loads((json_str))
     except json.JSONDecodeError:
+        print(json_str)
         return []
+
 df['Categories'] = df['Categories'].apply(safe_json_loads)
 
-# Step 3: Remove entries with an empty category list
 df = df[df['Categories'].apply(lambda categories: len(categories) > 0)]
 
-df.to_csv('manga_data.csv', index=False)
+output_path = "../data/updated_manga_data.csv"
 
+df.to_csv(output_path, index=False)
 
-print(df.info())

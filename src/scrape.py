@@ -69,7 +69,7 @@ while not end_loop:
                         for item in category_list:
                             score_str = item.find(attrs={"title": True}).get('title')
                             score = score_str.split()[1]
-                            categories.append({'Category': item.get_text(), 'Score': score})
+                            categories.append({"Category": item.get_text(), "Score": score})
                             total_score_votes+=int(score)
                     else:
                         print("There was an error getting categories of this manga")
