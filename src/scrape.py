@@ -6,14 +6,13 @@ import requests
 import csv, json
 
 fields = ['Title', 'Genres', 'Categories', 'Rating']
+data = []
 
 rating = 10.0
 end_loop = False
 
 script_run = datetime.now()
 
-fields = ['Title', 'Genres', 'Categories', 'Rating']
-data = []
 
 URL = f"https://www.mangaupdates.com/series.html?page=1&perpage=100&orderby=rating"
 
