@@ -1,20 +1,23 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
+from utils import calc_time_elapsed
+import os
 import requests
-import re
-import csv
+import csv, json
 
 fields = ['Title', 'Genres', 'Categories', 'Rating']
 
 rating = 10.0
-curr_page = 1
 end_loop = False
 
 script_run = datetime.now()
 
-while not end_loop:
-    URL = f"https://www.mangaupdates.com/series.html?page={curr_page}&orderby=rating&perpage=100"
+fields = ['Title', 'Genres', 'Categories', 'Rating']
+data = []
 
+URL = f"https://www.mangaupdates.com/series.html?page=3&perpage=100&orderby=rating"
+
+while not end_loop:
     response = requests.get(URL)
 
     if response.status_code == 200:
@@ -26,14 +29,12 @@ while not end_loop:
             print("There was an issue retrieving data for mangas")
             break
 
-        count = 0
-
         for manga in mangas:
             
             #Get rating of manga
             divs = manga.find_all(class_="text")
             rating = divs[3].find('b').get_text()
-            if float(rating) < 8.8:
+            if float(rating) < 7:
                 end_loop = True
                 break
             
@@ -54,23 +55,21 @@ while not end_loop:
                     #Get title of manga
                     title = next_soup.find(class_ = "releasestitle tabletitle")
                     if title:
-                        print(f"Title: {title.get_text()}")
+                        title = title.get_text()
                     else:
                         print("Could not get title of this manga")
 
                     #Get categories of manga
                     category_list = next_soup.find(class_="tags")
-                    print(f"Categories:")
+                    categories = []
                     if category_list:
                         total_score_votes = 0
                         category_list = category_list.find_all('li')
                         for item in category_list:
                             score_str = item.find(attrs={"title": True}).get('title')
                             score = score_str.split()[1]
+                            categories.append({'Category': item.get_text(), 'Score': score})
                             total_score_votes+=int(score)
-                            
-                            print(f"\t{item.get_text()}, Score: {score}")
-                        print(f"\tTotal Score: {total_score_votes}")
                     else:
                         print("There was an error getting categories of this manga")
 
@@ -82,45 +81,56 @@ while not end_loop:
                     .find_next_sibling('div')
                     .find_next_sibling('div')
                     .find_all('u'))
+                    genre_list = []
 
                     if genre:
-                        print(f"Genres:")
                         for item in genre[:-1]:
-                            print(f"\t{item.get_text()}")
+                            genre_list.append(item.get_text())
                     else:
                         print("Could not get genres of this manga")
 
                     #Get rating of manga
-                    if rating:
-                        print(f"Rating: {rating}")
-                    else:
+                    if not rating:
                         print("Could not get rating of this manga")
+                    data.append({
+                        "Title": title,
+                        "Genres": genre_list,
+                        "Categories": categories,
+                        "Rating": rating
+                    })
                 else:
-                    print(f"Failed to retrieve the page. Status code: {new_response.status_code}")
+                    print(f"Failed to retrieve the manga page. Status code: {new_response.status_code}")
             else:
-                print("No link found on the page.")
-            count += 1
+                print("Could not get manga details.")
+            URL = soup.find('a', text='Next Page').get('href')
+            print(URL)
     else:
         print(f"Failed to retrieve website. Status code: {response.status_code}")
-    curr_page += 1
+    
+    
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Define the relative path to the 'data' folder
+data_folder = os.path.join(script_dir, '..', 'data')
+relative_path = os.path.join(data_folder, 'manga_data.csv')
+
+
+with open(relative_path, mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(fields)
+    
+    for manga in data:
+        title = manga["Title"]
+        genres = json.dumps(manga["Genres"])
+        categories = json.dumps(manga["Categories"])
+        rating = manga["Rating"]
+        
+        writer.writerow([title, genres, categories, rating])
 
 script_end = datetime.now()
-time_elapsed = script_end - script_run
 
-hours, remainder = divmod(time_elapsed.seconds, 3600)
-minutes, seconds = divmod(remainder, 60)
+print(f"Time elapsed scraping: {calc_time_elapsed(script_run, script_end)}")
 
-elapsed_time_str = []
-if hours > 0:
-    elapsed_time_str.append(f"{hours} hrs")
-if minutes > 0:
-    elapsed_time_str.append(f"{minutes} mins")
-if seconds > 0:
-    elapsed_time_str.append(f"{seconds} secs")
-
-formatted_time_elapsed = ' '.join(elapsed_time_str)
-
-print(f"Time elapsed scraping: {formatted_time_elapsed}")
 
 
 
