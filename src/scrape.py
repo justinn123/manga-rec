@@ -104,6 +104,7 @@ while not end_loop:
             URL = soup.find('a', string='Next Page').get('href')
     else:
         print(f"Failed to retrieve website. Status code: {response.status_code}")
+        end_loop = True
     
     
 script_dir = os.path.dirname(os.path.abspath(__file__))

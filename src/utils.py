@@ -20,7 +20,7 @@ def calc_time_elapsed(start, end):
 
     return formatted_time_elapsed
 
-def fetch_page(url, retries = 5, delay = 2):
+def fetch_page(url, retries = 5, delay = 3):
     for i in range(retries):
         try:
             response = requests.get(url)
