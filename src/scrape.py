@@ -17,7 +17,7 @@ script_run = datetime.now()
 URL = f"https://www.mangaupdates.com/series.html?page=1&perpage=100&orderby=rating"
 
 while not end_loop:
-    response = requests.get(URL)
+    response = fetch_page(URL)
 
     if response.status_code == 200:
         webpage = response.text
@@ -32,7 +32,7 @@ while not end_loop:
             #Get rating of manga
             divs = manga.find_all(class_="text")
             rating = divs[3].find('b').get_text()
-            if float(rating) < 8.8:
+            if float(rating) < 7:
                 end_loop = True
                 break
             
@@ -101,7 +101,7 @@ while not end_loop:
                     })
             else:
                 print("Could not get manga details.")
-            URL = soup.find('a', text='Next Page').get('href')
+            URL = soup.find('a', string='Next Page').get('href')
     else:
         print(f"Failed to retrieve website. Status code: {response.status_code}")
     
