@@ -19,7 +19,7 @@ URL = f"https://www.mangaupdates.com/series.html?page=1&perpage=100&orderby=rati
 while not end_loop:
     response = fetch_page(URL)
 
-    if response.status_code == 200:
+    if response:
         webpage = response.text
 
         soup = BeautifulSoup(webpage, 'html.parser')
