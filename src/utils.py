@@ -17,7 +17,6 @@ def calc_time_elapsed(start, end):
 
     formatted_time_elapsed = ' '.join(elapsed_time_str)
 
-
     return formatted_time_elapsed
 
 def fetch_page(url, retries = 5, delay = 3):
