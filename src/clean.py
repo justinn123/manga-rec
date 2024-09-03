@@ -1,7 +1,5 @@
 import pandas as pd
 import json
-import os
-from pathlib import Path
 
 
 df = pd.read_csv('../data/manga_data.csv', encoding='latin-1')
